@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="sitePageTitle">CineFlix - Ultimate OTT Platform</title>
+    <style>
+        :root {
+            --netflix-red: #e50914;
+            --netflix-red-hover: #b80710;
+            --bg-base: #141414;
+            --bg-surface: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #b3b3b3;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --hero-bg: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1400&q=80');
+            --grid-min-width: 210px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Netflix Sans', 'Segoe UI', Roboto, Helvetica, sans-serif; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Top Navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 68px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4%;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: var(--netflix-red);
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .nav-actions { display: flex; gap: 12px; align-items: center; }
+
+        .btn-netflix {
+            background: var(--netflix-red);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-netflix:hover { background: var(--netflix-red-hover); }
+
+        .btn-secondary-nav {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-secondary-nav:hover { background: rgba(255, 255, 255, 0.25); }
+
+        .role-switch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .role-switch-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* Trial Timer Badge on Nav */
+        .trial-badge-nav {
+            background: #e50914;
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Hero Banner */
+        .hero {
+            position: relative;
+            height: 360px;
+            margin-top: 68px;
+            background: linear-gradient(to right, rgba(20,20,20,0.95), rgba(20,20,20,0.4)), var(--hero-bg) no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 4%;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); }
+        .hero p { color: var(--text-muted); font-size: 1.05rem; max-width: 550px; }
+
+        /* Main Content Layout */
+        .container { padding: 30px 4%; }
+        .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 18px; }
+
+        /* Video Grid Layout */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--grid-min-width), 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background: var(--bg-surface);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .video-card:hover {
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+
+        .thumbnail-box {
+            position: relative;
+            width: 100%;
+            height: 130px;
+            background: #000;
+        }
+        .thumbnail-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-details { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .video-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .card-actions-row { display: flex; gap: 8px; margin-top: 4px; }
+        .card-actions-row button { flex: 1; padding: 6px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: none; }
+        .btn-watch-card { background: #fff; color: #000; }
+        .btn-watch-card:hover { background: #e6e6e6; }
+        .btn-del-card { background: rgba(255,255,255,0.1); color: #ff5252; display: none; }
+        
+        body.is-editor-mode .btn-del-card { display: block; }
+
+        /* Modal Base */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-card {
+            background: #181818;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header h3 { font-size: 1.1rem; }
+        .close-icon-btn { background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; }
+        
+        .modal-body { padding: 20px; overflow-y: auto; }
+        .form-field { margin-bottom: 14px; }
+        .form-field label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        .form-field input, .form-field select {
+            width: 100%; padding: 10px 12px; background: #333;
+            border: 1px solid transparent; border-radius: 4px; color: #fff; outline: none;
+            font-size: 0.9rem;
+        }
+        .form-field input:focus, .form-field select:focus { border-color: #fff; }
+
+        /* Role Selection Portal Modal Style */
+        .role-choice-card {
+            background: #181818;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+        }
+        .role-choice-card h2 { font-size: 1.6rem; margin-bottom: 8px; color: #fff; }
+        .role-choice-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; }
+        .role-btn-group { display: flex; flex-direction: column; gap: 12px; }
+        .role-btn {
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .role-btn-watcher { background: #333; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+        .role-btn-watcher:hover { background: #444; transform: scale(1.02); }
+        .role-btn-editor { background: var(--netflix-red); color: #fff; }
+        .role-btn-editor:hover { background: var(--netflix-red-hover); transform: scale(1.02); }
+
+        /* Netflix Player Box */
+        .player-box {
+            position: relative;
+            width: 100%;
+            max-width: 950px;
+            background: #000;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #000;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        .player-box:fullscreen,
+        .player-box:-webkit-full-screen {
+            max-width: none !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0;
+            background: #000;
+        }
+        .player-box:fullscreen .video-wrapper,
+        .player-box:-webkit-full-screen .video-wrapper { width: 100vw !important; height: 100vh !important; }
+        .player-box:fullscreen video,
+        .player-box:-webkit-full-screen video { width: 100vw !important; height: 100vh !important; }
+
+        .autohide-target { opacity: 1; visibility: visible; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .player-box.hide-controls .autohide-target { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .netflix-controls {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            display: flex; flex-direction: column;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+            padding: 20px 25px 15px 25px; gap: 8px; z-index: 20;
+        }
+
+        .netflix-seekbar-wrapper { width: 100%; display: flex; align-items: center; }
+        .netflix-seekbar {
+            appearance: none; -webkit-appearance: none; width: 100%; height: 4px;
+            background: rgba(255, 255, 255, 0.3); border-radius: 2px; outline: none; cursor: pointer;
+            transition: height 0.15s ease;
+        }
+        .netflix-seekbar:hover { height: 7px; }
+        .netflix-seekbar::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 13px; height: 13px; border-radius: 50%;
+            background: var(--netflix-red); cursor: pointer; transform: scale(0); transition: transform 0.15s ease;
+        }
+        .netflix-seekbar:hover::-webkit-slider-thumb { transform: scale(1); }
+
+        .netflix-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .ctrl-group { display: flex; align-items: center; gap: 12px; }
+        
+        .n-btn { background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; opacity: 0.85; transition: opacity 0.2s, transform 0.1s; }
+        .n-btn:hover { opacity: 1; transform: scale(1.1); }
+        .time-text { font-size: 0.82rem; color: #e5e5e5; }
+
+        .volume-container { display: flex; align-items: center; gap: 6px; }
+        .netflix-vol {
+            appearance: none; -webkit-appearance: none; width: 60px; height: 4px;
+            background: rgba(255, 255, 255, 0.3); border-radius: 2px; outline: none; cursor: pointer;
+        }
+        .netflix-vol::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+
+        .netflix-top-bar {
+            position: absolute; top: 0; left: 0; right: 0; padding: 20px 25px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            display: flex; justify-content: space-between; align-items: center; z-index: 25;
+        }
+        .netflix-video-title { font-size: 1.1rem; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+        .netflix-close-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s; }
+        .netflix-close-btn:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Initial Role Selection Modal -->
+    <div class="modal-overlay" id="roleSelectionModal">
+        <div class="role-choice-card">
+            <h2>स्वागत है!</h2>
+            <p>कृपया आगे बढ़ने के लिए अपना विकल्प चुनें:</p>
+            <div class="role-btn-group">
+                <button class="role-btn role-btn-watcher" onclick="selectRole('watcher')">👁️ Watcher (1 दिन फ्री एडिटर ट्रायल)</button>
+                <button class="role-btn role-btn-editor" onclick="openPasswordPromptForEditor()">⚙️ Website Editor (परमानेंट)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permanent Editor Password Modal -->
+    <div class="modal-overlay" id="editorPasswordModal">
+        <div class="modal-card" style="max-width: 380px;">
+            <div class="modal-header">
+                <h3>एडिटर पासवर्ड दर्ज करें</h3>
+                <button class="close-icon-btn" onclick="closeModal('editorPasswordModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>गुप्त पासवर्ड</label>
+                    <input type="password" id="enteredEditorPassword" placeholder="पासवर्ड लिखें">
+                </div>
+                <button class="btn-netflix" style="width: 100%; padding: 11px;" onclick="verifyEditorPassword()">लॉगिन करें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1-Day Trial Expired / Permanent Access Request Modal -->
+    <div class="modal-overlay" id="trialExpiredModal">
+        <div class="modal-card" style="max-width: 425px; text-align: center;">
+            <div class="modal-header">
+                <h3>1-दिन का फ्री ट्रायल समाप्त</h3>
+                <button class="close-icon-btn" onclick="closeModal('trialExpiredModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 25px;">
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">आपका 1-दिन का फ्री वेबसाइट एडिटर ट्रायल पूरा हो गया है। हमेशा के लिए एडिटर बने रहने के लिए एडिटर से पासवर्ड लें या व्हाट्सएप पर संपर्क करें:</p>
+                
+                <div class="form-field" style="text-align: left;">
+                    <label>परमानेंट एडिटर पासवर्ड दर्ज करें</label>
+                    <input type="password" id="upgradePasswordInput" placeholder="पासवर्ड दर्ज करें">
+                </div>
+                <button class="btn-netflix" style="width: 100%; margin-bottom: 12px; padding: 11px;" onclick="upgradeToPermanentEditor()">परमानेंट एडिटर बनें</button>
+                
+                <a id="whatsappTrialBtn" href="#" target="_blank" style="display: block; background: #25d366; color: #fff; padding: 11px; border-radius: 4px; text-decoration: none; font-size: 0.95rem; font-weight: bold;">
+                    💬 WhatsApp पर पासवर्ड मांगें (6398931033)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo" id="logoText" onclick="renderApp()">CineFlix</div>
+        <div class="nav-actions">
+            <!-- Visible Timer Badge for Trial Users -->
+            <div id="trialTimerNavBadge" class="trial-badge-nav" style="display:none;">
+                ⏳ ट्रायल समय शेष: <span id="navTimerCountdown">24:00:00</span>
+            </div>
+
+            <!-- केवल एडिटर को दिखने वाले कंट्रोल्स -->
+            <button class="btn-secondary-nav editor-only-control" style="display:none;" onclick="openModal('customizerModal')">⚙️ Customizer</button>
+            <button class="btn-netflix editor-only-control" style="display:none;" onclick="openModal('uploadModal')">＋ वीडियो</button>
+            <button class="btn-secondary-nav editor-only-control" style="display:none;" onclick="openSettingsModal()">🔑 एडिटर सेटिंग्स</button>
+            <button class="btn-secondary-nav editor-only-control" style="display:none; background:#25d366; color:#fff;" onclick="shareFreshLink()">📤 लिंक शेयर करें</button>
+            
+            <button class="role-switch-btn" id="switchRoleNavBtn" style="display:none;" onclick="openRolePortal()" title="रोल बदलें">🔄 स्विच रोल</button>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <section class="hero" id="heroSectionBox">
+        <h1 id="heroHeading">अनंत मनोरंजन, कभी भी और कहीं भी</h1>
+        <p id="heroSubtext">अपनी खुद की वीडियो लाइब्रेरी बनाएं और नेटफ्लिक्स जैसे शानदार और सहज अनुभव के साथ देखें।</p>
+    </section>
+
+    <!-- Content Library -->
+    <div class="container">
+        <div class="section-title" id="sectionTitleText">लोकप्रिय वीडियोज़</div>
+        <div class="video-grid" id="videoGridContainer"></div>
+    </div>
+
+    <!-- Editor Settings & Password Viewer Modal -->
+    <div class="modal-overlay" id="editorSettingsModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>एडिटर सेटिंग्स और पासवर्ड</h3>
+                <button class="close-icon-btn" onclick="closeModal('editorSettingsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>वर्तमान एडिटर पासवर्ड (यहाँ से देखें/बदले)</label>
+                    <input type="text" id="currentPasswordViewer" placeholder="पासवर्ड">
+                </div>
+                <button class="btn-netflix" style="width: 100%; margin-bottom: 12px; padding: 10px;" onclick="saveNewEditorPassword()">पासवर्ड अपडेट करें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>नया वीडियो अपलोड करें</h3>
+                <button class="close-icon-btn" onclick="closeModal('uploadModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>वीडियो का नाम</label>
+                    <input type="text" id="inTitle" placeholder="उदा. मूवी या शो का नाम">
+                </div>
+                <div class="form-field">
+                    <label>वीडियो फ़ाइल (MP4)</label>
+                    <input type="file" id="inVideoFile" accept="video/*">
+                </div>
+                <div class="form-field">
+                    <label>या डायरेक्ट वीडियो URL</label>
+                    <input type="text" id="inVideoUrl" placeholder="https://.../video.mp4">
+                </div>
+                <div class="form-field">
+                    <label>थंबनेल इमेज लिंक</label>
+                    <input type="text" id="inPosterUrl" placeholder="https://.../image.jpg">
+                </div>
+                <button class="btn-netflix" style="width: 100%; margin-top: 10px; padding: 11px;" onclick="handleUpload()">सेव करें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- A-Z Website Customizer Modal -->
+    <div class="modal-overlay" id="customizerModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>A-to-Z Website Customizer</h3>
+                <button class="close-icon-btn" onclick="closeModal('customizerModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>ब्रांड / वेबसाइट का नाम (Logo)</label>
+                    <input type="text" id="setSiteName" placeholder="CineFlix">
+                </div>
+                <div class="form-field">
+                    <label>थीम कलर (Primary Red/Accent)</label>
+                    <input type="color" id="setThemeColor" value="#e50914" style="height: 40px; padding: 2px; cursor: pointer;">
+                </div>
+                <div class="form-field">
+                    <label>वेबसाइट बेस बैकग्राउंड कलर</label>
+                    <input type="color" id="setBgColor" value="#141414" style="height: 40px; padding: 2px; cursor: pointer;">
+                </div>
+                <div class="form-field">
+                    <label>Hero Banner की मुख्य हेडिंग</label>
+                    <input type="text" id="setHeroHeading" placeholder="अनंत मनोरंजन...">
+                </div>
+                <div class="form-field">
+                    <label>Hero Banner का सब-टेक्स्ट</label>
+                    <input type="text" id="setHeroSubtext" placeholder="अपनी खुद की वीडियो लाइब्रेरी...">
+                </div>
+                <div class="form-field">
+                    <label>Hero Banner बैकग्राउंड इमेज लिंक</label>
+                    <input type="text" id="setHeroBgImage" placeholder="https://.../banner.jpg">
+                </div>
+                <div class="form-field">
+                    <label>वीडियो कार्ड ग्रिड साइज़ (कार्ड की चौड़ाई)</label>
+                    <select id="setCardSize">
+                        <option value="170px">छोटा (Compact)</option>
+                        <option value="210px" selected>मीडियम (Default)</option>
+                        <option value="260px">बड़ा (Large)</option>
+                    </select>
+                </div>
+                <button class="btn-netflix" style="width: 100%; margin-top: 10px; padding: 11px;" onclick="applyFullCustomization()">सारे बदलाव लागू करें</button>
+                <button class="btn-secondary-nav" style="width: 100%; margin-top: 8px; padding: 9px;" onclick="resetFullCustomization()">डिफ़ॉल्ट रीसेट करें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Netflix Style Video Player Modal -->
+    <div class="modal-overlay" id="playerModal">
+        <div class="player-box" id="playerBoxContainer">
+            <div class="netflix-top-bar autohide-target">
+                <div class="netflix-video-title" id="playerTitleDisplay">Video Title</div>
+                <button class="netflix-close-btn" onclick="closePlayer()">&times;</button>
+            </div>
+            <div class="video-wrapper" id="videoWrapperBox">
+                <video id="activeVideoPlayer" crossorigin="anonymous">
+                    <source id="activeVideoSource" src="" type="video/mp4">
+                    आपका ब्राउज़र वीडियो सपोर्ट नहीं करता।
+                </video>
+            </div>
+            <div class="netflix-controls autohide-target">
+                <div class="netflix-seekbar-wrapper">
+                    <input type="range" class="netflix-seekbar" id="videoSeekbar" value="0" min="0" max="100" step="0.1">
+                </div>
+                <div class="netflix-row">
+                    <div class="ctrl-group">
+                        <button class="n-btn" id="playPauseBtn" onclick="togglePlayState()">▶</button>
+                        <button class="n-btn" onclick="skipTime(-10)">⏪</button>
+                        <button class="n-btn" onclick="skipTime(10)">⏩</button>
+                        <div class="volume-container">
+                            <button class="n-btn" id="muteUnmuteBtn" onclick="toggleMuteState()">🔊</button>
+                            <input type="range" class="netflix-vol" id="volumeSlider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+                        </div>
+                        <span class="time-text" id="timeViewer">0:00 / 0:00</span>
+                    </div>
+                    <div class="ctrl-group">
+                        <button class="n-btn" id="loopBtn" onclick="toggleLoop()" title="Loop">🔁</button>
+                        <button class="n-btn" onclick="changeSpeed()" title="Speed"><span id="speedText" style="font-size:0.9rem; font-weight:600;">1x</span></button>
+                        <button class="n-btn" onclick="togglePiP()" title="PiP">🗗</button>
+                        <button class="n-btn" onclick="toggleFullScreen()" title="Fullscreen">⛶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        let videoList = JSON.parse(localStorage.getItem('netflix_clone_db_v1')) || [
+            {
+                id: 1,
+                title: "Big Buck Bunny Animation",
+                poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=500&q=80",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            }
+        ];
+
+        const player = document.getElementById('activeVideoPlayer');
+        const source = document.getElementById('activeVideoSource');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const muteUnmuteBtn = document.getElementById('muteUnmuteBtn');
+        const timeViewer = document.getElementById('timeViewer');
+        const playerBoxContainer = document.getElementById('playerBoxContainer');
+        const videoSeekbar = document.getElementById('videoSeekbar');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const speedText = document.getElementById('speedText');
+        const loopBtn = document.getElementById('loopBtn');
+        const playerTitleDisplay = document.getElementById('playerTitleDisplay');
+
+        let hideTimeout = null;
+        let timerInterval = null;
+        const editorPhone = "916398931033";
+
+        // --- Editor Password Management ---
+        function getStoredPassword() {
+            return localStorage.getItem('editor_secret_password') || "admin123";
+        }
+
+        function openSettingsModal() {
+            document.getElementById('currentPasswordViewer').value = getStoredPassword();
+            openModal('editorSettingsModal');
+        }
+
+        function saveNewEditorPassword() {
+            const newPass = document.getElementById('currentPasswordViewer').value.trim();
+            if (!newPass) { alert('पासवर्ड खाली नहीं हो सकता!'); return; }
+            localStorage.setItem('editor_secret_password', newPass);
+            alert('एडिटर पासवर्ड सफलतापूर्वक अपडेट कर दिया गया है!');
+            closeModal('editorSettingsModal');
+        }
+
+        // --- Role, Reset Link & 1-Day Trial Management (Fixed) ---
+        function checkUserRole() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // अगर लिंक में ?reset=true है, तो सब कुछ साफ़ कर देगा
+            if (urlParams.has('reset') || urlParams.get('reset') === 'true') {
+                localStorage.removeItem('user_role_type');
+                localStorage.removeItem('editor_trial_start_time');
+                localStorage.removeItem('netflix_active_session');
+                
+                // साफ़ URL पर रीडायरेक्ट करेगा ताकि बार-बार रिफ्रेश पर लूप न बने
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            let role = localStorage.getItem('user_role_type');
+            let trialStart = localStorage.getItem('editor_trial_start_time');
+
+            if (!role) {
+                document.getElementById('roleSelectionModal').style.display = 'flex';
+                return;
+            }
+
+            if (role === 'trial_editor' && trialStart) {
+                let elapsed = Date.now() - parseInt(trialStart);
+                let oneDayMs = 24 * 60 * 60 * 1000;
+                
+                if (elapsed > oneDayMs) {
+                    if (timerInterval) clearInterval(timerInterval);
+                    const waMsg = encodeURIComponent("Hello Editor, my 1-day free trial on CineFlix has ended. Please provide the permanent password.");
+                    document.getElementById('whatsappTrialBtn').href = `https://wa.me/${editorPhone}?text=${waMsg}`;
+                    openModal('trialExpiredModal');
+                    return;
+                } else {
+                    startLiveCountdown(parseInt(trialStart) + oneDayMs);
+                }
+            }
+
+            document.getElementById('roleSelectionModal').style.display = 'none';
+            applyRoleUI(role === 'permanent_editor' ? 'editor' : 'watcher');
+        }
+
+        function startLiveCountdown(expiryTimeMs) {
+            const timerBadge = document.getElementById('trialTimerNavBadge');
+            const timerText = document.getElementById('navTimerCountdown');
+            timerBadge.style.display = 'flex';
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                let now = Date.now();
+                let distance = expiryTimeMs - now;
+
+                if (distance <= 0) {
+                    clearInterval(timerInterval);
+                    timerBadge.style.display = 'none';
+                    checkUserRole();
+                    return;
+                }
+
+                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timerText.innerText = 
+                    (hours < 10 ? "0" + hours : hours) + ":" + 
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                    (seconds < 10 ? "0" + seconds : seconds);
+            }, 1000);
+        }
+
+        function selectRole(role) {
+            if (role === 'watcher') {
+                if (!localStorage.getItem('editor_trial_start_time')) {
+                    localStorage.setItem('editor_trial_start_time', Date.now().toString());
+                }
+                localStorage.setItem('user_role_type', 'trial_editor');
+                document.getElementById('roleSelectionModal').style.display = 'none';
+                checkUserRole();
+            }
+        }
+
+        function openPasswordPromptForEditor() {
+            document.getElementById('roleSelectionModal').style.display = 'none';
+            openModal('editorPasswordModal');
+        }
+
+        function verifyEditorPassword() {
+            const entered = document.getElementById('enteredEditorPassword').value.trim();
+            const correctPass = getStoredPassword();
+
+            if (entered === correctPass) {
+                if (timerInterval) clearInterval(timerInterval);
+                localStorage.setItem('user_role_type', 'permanent_editor');
+                localStorage.removeItem('editor_trial_start_time');
+                document.getElementById('trialTimerNavBadge').style.display = 'none';
+                closeModal('editorPasswordModal');
+                applyRoleUI('editor');
+                alert('परमानेंट एडिटर एक्सेस मिल गया है!');
+            } else {
+                alert('गलत पासवर्ड! कृपया सही पासवर्ड दर्ज करें।');
+            }
+        }
+
+        function upgradeToPermanentEditor() {
+            const entered = document.getElementById('upgradePasswordInput').value.trim();
+            const correctPass = getStoredPassword();
+
+            if (entered === correctPass) {
+                if (timerInterval) clearInterval(timerInterval);
+                localStorage.setItem('user_role_type', 'permanent_editor');
+                localStorage.removeItem('editor_trial_start_time');
+                document.getElementById('trialTimerNavBadge').style.display = 'none';
+                closeModal('trialExpiredModal');
+                applyRoleUI('editor');
+                alert('बधाई हो! अब आप परमानेंट एडिटर बन गए हैं।');
+            } else {
+                alert('गलत पासवर्ड!');
+            }
+        }
+
+        function applyRoleUI(mode) {
+            const editorControls = document.querySelectorAll('.editor-only-control');
+            const switchBtn = document.getElementById('switchRoleNavBtn');
+
+            if (mode === 'editor') {
+                document.body.classList.add('is-editor-mode');
+                editorControls.forEach(el => el.style.display = 'inline-block');
+                switchBtn.style.display = 'inline-block';
+                switchBtn.innerText = "🔄 स्विच रोल";
+            } else {
+                document.body.classList.remove('is-editor-mode');
+                editorControls.forEach(el => el.style.display = 'none');
+                switchBtn.style.display = 'none';
+            }
+            
+            renderApp();
+        }
+
+        function openRolePortal() {
+            if (timerInterval) clearInterval(timerInterval);
+            localStorage.removeItem('user_role_type');
+            localStorage.removeItem('editor_trial_start_time');
+            document.getElementById('trialTimerNavBadge').style.display = 'none';
+            document.getElementById('roleSelectionModal').style.display = 'flex';
+        }
+
+        // --- Bulletproof Link Sharing Feature ---
+        function shareFreshLink() {
+            let currentUrl = window.location.href.split('?')[0]; // बेस URL निकालेगा बिना पुराने पैरामीटर्स के
+            let shareableUrl = currentUrl + "?reset=true";
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareableUrl).then(() => {
+                    alert("वेबसाइट की फ्रेश लिंक कॉपी हो गई है!\n\n" + shareableUrl);
+                }).catch(() => {
+                    prompt("यह रही आपकी फ्रेश लिंक, इसे कॉपी करें:", shareableUrl);
+                });
+            } else {
+                prompt("यह रही आपकी फ्रेश लिंक, इसे कॉपी करें:", shareableUrl);
+            }
+        }
+
+        // --- A-to-Z Customizer Logic ---
+        function loadFullCustomization() {
+            const defaultSettings = {
+                name: 'CineFlix',
+                themeColor: '#e50914',
+                bgColor: '#141414',
+                heroHeading: 'अनंत मनोरंजन, कभी भी और कहीं भी',
+                heroSubtext: 'अपनी खुद की वीडियो लाइब्रेरी बनाएं और नेटफ्लिक्स जैसे शानदार और सहज अनुभव के साथ देखें।',
+                heroBgImage: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1400&q=80',
+                cardSize: '210px'
+            };
+
+            const settings = JSON.parse(localStorage.getItem('ott_az_customizer')) || defaultSettings;
+
+            document.getElementById('logoText').innerText = settings.name;
+            document.getElementById('sitePageTitle').innerText = settings.name + ' - OTT Platform';
+            document.documentElement.style.setProperty('--netflix-red', settings.themeColor);
+            document.documentElement.style.setProperty('--netflix-red-hover', adjustBrightness(settings.themeColor, -20));
+            document.documentElement.style.setProperty('--bg-base', settings.bgColor);
+            document.documentElement.style.setProperty('--grid-min-width', settings.cardSize);
+            document.documentElement.style.setProperty('--hero-bg', `url('${settings.heroBgImage}')`);
+
+            document.getElementById('heroHeading').innerText = settings.heroHeading;
+            document.getElementById('heroSubtext').innerText = settings.heroSubtext;
+
+            document.getElementById('setSiteName').value = settings.name;
+            document.getElementById('setThemeColor').value = settings.themeColor;
+            document.getElementById('setBgColor').value = settings.bgColor;
+            document.getElementById('setHeroHeading').value = settings.heroHeading;
+            document.getElementById('setHeroSubtext').value = settings.heroSubtext;
+            document.getElementById('setHeroBgImage').value = settings.heroBgImage;
+            document.getElementById('setCardSize').value = settings.cardSize;
+        }
+
+        function applyFullCustomization() {
+            const settings = {
+                name: document.getElementById('setSiteName').value.trim() || 'CineFlix',
+                themeColor: document.getElementById('setThemeColor').value,
+                bgColor: document.getElementById('setBgColor').value,
+                heroHeading: document.getElementById('setHeroHeading').value.trim() || 'अनंत मनोरंजन, कभी भी और कहीं भी',
+                heroSubtext: document.getElementById('setHeroSubtext').value.trim() || 'अपनी खुद की वीडियो लाइब्रेरी बनाएं...',
+                heroBgImage: document.getElementById('setHeroBgImage').value.trim() || 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1400&q=80',
+                cardSize: document.getElementById('setCardSize').value
+            };
+
+            localStorage.setItem('ott_az_customizer', JSON.stringify(settings));
+            loadFullCustomization();
+            closeModal('customizerModal');
+        }
+
+        function resetFullCustomization() {
+            localStorage.removeItem('ott_az_customizer');
+            loadFullCustomization();
+            closeModal('customizerModal');
+        }
+
+        function adjustBrightness(hex, percent) {
+            let num = parseInt(hex.replace("#",""), 16);
+            let amt = Math.round(2.55 * percent);
+            let R = (num >> 16) + amt;
+            let G = (num >> 8 & 0x00FF) + amt;
+            let B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+        }
+
+        function saveData() {
+            localStorage.setItem('netflix_clone_db_v1', JSON.stringify(videoList));
+        }
+
+        function renderApp() {
+            const grid = document.getElementById('videoGridContainer');
+            grid.innerHTML = '';
+            
+            if (videoList.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-muted);">कोई वीडियो उपलब्ध नहीं है।</p>';
+                return;
+            }
+
+            videoList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => playVideo(item.url, item.title);
+                
+                card.innerHTML = `
+                    <div class="thumbnail-box">
+                        <img src="${item.poster || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80'}" alt="Thumbnail">
+                    </div>
+                    <div class="card-details">
+                        <div class="video-name" title="${item.title}">${item.title}</div>
+                        <div class="card-actions-row" onclick="event.stopPropagation()">
+                            <button class="btn-watch-card" onclick="playVideo('${item.url}', '${item.title}')">चलाएं</button>
+                            <button class="btn-del-card" onclick="deleteVideo(${item.id})">हटाएं</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleUpload() {
+            const title = document.getElementById('inTitle').value.trim();
+            const vFile = document.getElementById('inVideoFile').files[0];
+            const vUrl = document.getElementById('inVideoUrl').value.trim();
+            const pUrl = document.getElementById('inPosterUrl').value.trim();
+
+            if (!title) { alert('कृपया वीडियो का नाम दर्ज करें!'); return; }
+            let finalVideoSrc = vUrl;
+            if (vFile) finalVideoSrc = URL.createObjectURL(vFile);
+
+            if (!finalVideoSrc) { alert('वीडियो फ़ाइल या URL देना अनिवार्य है!'); return; }
+
+            videoList.unshift({
+                id: Date.now(),
+                title: title,
+                poster: pUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80',
+                url: finalVideoSrc
+            });
+
+            saveData();
+            renderApp();
+            closeModal('uploadModal');
+            
+            document.getElementById('inTitle').value = '';
+            document.getElementById('inVideoFile').value = '';
+            document.getElementById('inVideoUrl').value = '';
+            document.getElementById('inPosterUrl').value = '';
+        }
+
+        function deleteVideo(id) {
+            if (confirm('क्या आप वाकई इस वीडियो को हटाना चाहते हैं?')) {
+                videoList = videoList.filter(v => v.id !== id);
+                saveData();
+                renderApp();
+            }
+        }
+
+        function playVideo(videoUrl, title) {
+            source.src = videoUrl;
+            playerTitleDisplay.innerText = title;
+            player.load();
+            document.getElementById('playerModal').style.display = 'flex';
+            
+            localStorage.setItem('netflix_active_session', JSON.stringify({ url: videoUrl, title: title, time: 0 }));
+
+            player.play().then(() => {
+                playPauseBtn.innerText = "⏸";
+                resetHideTimer();
+            }).catch(e => console.log(e));
+        }
+
+        function closePlayer() {
+            player.pause();
+            source.src = '';
+            if (document.fullscreenElement) document.exitFullscreen();
+            document.getElementById('playerModal').style.display = 'none';
+            localStorage.removeItem('netflix_active_session');
+            if (hideTimeout) clearTimeout(hideTimeout);
+        }
+
+        function togglePlayState() {
+            if (player.paused) {
+                player.play();
+                playPauseBtn.innerText = "⏸";
+                resetHideTimer();
+            } else {
+                player.pause();
+                playPauseBtn.innerText = "▶";
+                playerBoxContainer.classList.remove('hide-controls');
+                if (hideTimeout) clearTimeout(hideTimeout);
+            }
+        }
+
+        player.addEventListener('click', togglePlayState);
+        player.addEventListener('dblclick', toggleFullScreen);
+
+        playerBoxContainer.addEventListener('mousemove', resetHideTimer);
+        playerBoxContainer.addEventListener('touchstart', resetHideTimer);
+
+        function resetHideTimer() {
+            playerBoxContainer.classList.remove('hide-controls');
+            if (hideTimeout) clearTimeout(hideTimeout);
+            
+            if (!player.paused) {
+                hideTimeout = setTimeout(() => {
+                    playerBoxContainer.classList.add('hide-controls');
+                }, 2500);
+            }
+        }
+
+        function toggleMuteState() {
+            player.muted = !player.muted;
+            muteUnmuteBtn.innerText = player.muted ? "🔇" : "🔊";
+            volumeSlider.value = player.muted ? 0 : player.volume;
+            resetHideTimer();
+        }
+
+        function changeVolume(val) {
+            player.volume = val;
+            player.muted = (val == 0);
+            muteUnmuteBtn.innerText = (val == 0) ? "🔇" : "🔊";
+            resetHideTimer();
+        }
+
+        function skipTime(value) {
+            player.currentTime += value;
+            resetHideTimer();
+        }
+
+        function toggleLoop() {
+            player.loop = !player.loop;
+            loopBtn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--netflix-red');
+            resetHideTimer();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('playerModal').style.display === 'flex') {
+                if (e.code === 'Space') { e.preventDefault(); togglePlayState(); }
+                else if (e.code === 'KeyF') { toggleFullScreen(); }
+                else if (e.code === 'KeyM') { toggleMuteState(); }
+                else if (e.code === 'ArrowRight') { skipTime(5); }
+                else if (e.code === 'ArrowLeft') { skipTime(-5); }
+            }
+        });
+
+        player.addEventListener('timeupdate', () => {
+            if (!isNaN(player.duration)) {
+                let curM = Math.floor(player.currentTime / 60);
+                let curS = Math.floor(player.currentTime % 60);
+                let durM = Math.floor(player.duration / 60);
+                let durS = Math.floor(player.duration % 60);
+                
+                timeViewer.innerText = `${curM}:${curS < 10 ? '0' : ''}${curS} / ${durM}:${durS < 10 ? '0' : ''}${durS}`;
+                videoSeekbar.value = (player.currentTime / player.duration) * 100;
+
+                let activeSession = JSON.parse(localStorage.getItem('netflix_active_session'));
+                if (activeSession) {
+                    activeSession.time = player.currentTime;
+                    localStorage.setItem('netflix_active_session', JSON.stringify(activeSession));
+                }
+            }
+        });
+
+        videoSeekbar.addEventListener('input', () => {
+            if (!isNaN(player.duration)) {
+                player.currentTime = (videoSeekbar.value / 100) * player.duration;
+            }
+            resetHideTimer();
+        });
+
+        let speeds = [1, 1.25, 1.5, 2, 0.5];
+        let speedIndex = 0;
+        function changeSpeed() {
+            speedIndex = (speedIndex + 1) % speeds.length;
+            player.playbackRate = speeds[speedIndex];
+            speedText.innerText = speeds[speedIndex] + 'x';
+            resetHideTimer();
+        }
+
+        async function togglePiP() {
+            try {
+                if (document.pictureInPictureElement) await document.exitPictureInPicture();
+                else if (document.pictureInPictureEnabled) await player.requestPictureInPicture();
+            } catch (err) { console.log(err); }
+            resetHideTimer();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                if (playerBoxContainer.requestFullscreen) playerBoxContainer.requestFullscreen();
+                else if (playerBoxContainer.webkitRequestFullscreen) playerBoxContainer.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+            resetHideTimer();
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Initial Load Setup
+        window.addEventListener('DOMContentLoaded', () => {
+            checkUserRole();
+            loadFullCustomization();
+            renderApp();
+            
+            let savedSession = JSON.parse(localStorage.getItem('netflix_active_session'));
+            if (savedSession && savedSession.url && !savedSession.url.startsWith('blob:')) {
+                source.src = savedSession.url;
+                playerTitleDisplay.innerText = savedSession.title;
+                player.load();
+                document.getElementById('playerModal').style.display = 'flex';
+                
+                player.addEventListener('loadedmetadata', () => {
+                    player.currentTime = savedSession.time || 0;
+                }, { once: true });
+            }
+        });
+    </script>
+</body>
+</html>
